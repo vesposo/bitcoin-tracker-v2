@@ -8,8 +8,302 @@
 </head>
 <body>
     <div class="container">
-        <!-- Content will be here -->
+        <div class="card">
+            <h1>Bitcoin Issue Tracker</h1>
+
+            <!-- Dashboard Stats -->
+            <div class="dashboard">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-issues">0</div>
+                    <div class="stat-label">Total Issues</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="active-issues">0</div>
+                    <div class="stat-label">Active Issues</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="latest-id">-</div>
+                    <div class="stat-label">Latest Issue ID</div>
+                </div>
+            </div>
+
+            <!-- Status Legend -->
+            <div class="status-legend">
+                <h3 style="width: 100%; margin: 0 0 15px 0; color: #1877f2;">Status Color Guide</h3>
+                <div class="legend-item" style="width: calc(50% - 10px); margin-bottom: 10px;">
+                    <div class="legend-color" style="background-color: #ff3b30;"></div>
+                    <div>
+                        <strong style="display: block;">Active</strong>
+                        <span style="font-size: 12px; color: #666;">New or ongoing issue that needs attention</span>
+                    </div>
+                </div>
+                <div class="legend-item" style="width: calc(50% - 10px); margin-bottom: 10px;">
+                    <div class="legend-color" style="background-color: #34c759;"></div>
+                    <div>
+                        <strong style="display: block;">Resolved</strong>
+                        <span style="font-size: 12px; color: #666;">Issue has been successfully resolved</span>
+                    </div>
+                </div>
+                <div class="legend-item" style="width: calc(50% - 10px); margin-bottom: 10px;">
+                    <div class="legend-color" style="background-color: #ff9500;"></div>
+                    <div>
+                        <strong style="display: block;">Pending</strong>
+                        <span style="font-size: 12px; color: #666;">Awaiting response or action</span>
+                    </div>
+                </div>
+                <div class="legend-item" style="width: calc(50% - 10px); margin-bottom: 10px;">
+                    <div class="legend-color" style="background-color: #5856d6;"></div>
+                    <div>
+                        <strong style="display: block;">Monitoring</strong>
+                        <span style="font-size: 12px; color: #666;">Under observation for further updates</span>
+                    </div>
+                </div>
+                <div class="legend-item" style="width: calc(50% - 10px);">
+                    <div class="legend-color" style="background-color: #8e8e93;"></div>
+                    <div>
+                        <strong style="display: block;">Closed</strong>
+                        <span style="font-size: 12px; color: #666;">Issue has been completed and closed</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Menu Buttons -->
+            <div class="menu-buttons">
+                <button onclick="showSection('add')">Add New Issue</button>
+                <button onclick="showSection('update')">Update Issue</button>
+                <button onclick="showSection('show')">Show Issue Details</button>
+                <button onclick="showSection('report')">Generate Report</button>
+            </div>
+
+            <!-- Add New Issue Form -->
+            <div id="add-section" class="form-section">
+                <h2>Add New Issue</h2>
+                <div class="form-group">
+                    <label>C-Token:</label>
+                    <input type="text" id="c-token" placeholder="Enter C-Token">
+                </div>
+                <div class="form-group">
+                    <label>Case #:</label>
+                    <input type="text" id="case-number" placeholder="Enter Case Number">
+                </div>
+                <div class="form-group">
+                    <label>Advocate Name:</label>
+                    <input type="text" id="advocate" placeholder="Enter Advocate Name">
+                </div>
+                <div class="form-group">
+                    <label>Topic:</label>
+                    <select id="topic">
+                        <option value="">Select Topic</option>
+                        <option value="Eligibility">Eligibility</option>
+                        <option value="Withdrawal">Withdrawal</option>
+                        <option value="Transfer">Transfer</option>
+                        <option value="Purchase">Purchase</option>
+                        <option value="Sale">Sale</option>
+                        <option value="Technical">Technical</option>
+                        <option value="Compliance">Compliance</option>
+                        <option value="Security">Security</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Issue:</label>
+                    <input type="text" id="subcategory" placeholder="Type the specific issue">
+                </div>
+                <div class="form-group">
+                    <label>Description of Issue:</label>
+                    <textarea id="misinfo-details" placeholder="Enter description of the issue"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Additional Notes:</label>
+                    <textarea id="notes" placeholder="Enter any additional notes"></textarea>
+                </div>
+                <button onclick="addIssue()">Submit Issue</button>
+            </div>
+
+            <!-- Update Issue Form -->
+            <div id="update-section" class="form-section">
+                <h2>Update Issue</h2>
+                
+                <!-- Recent Issues Quick Select -->
+                <div class="recent-issues" style="margin-bottom: 30px;">
+                    <h3 style="color: #1877f2; margin-bottom: 15px;">Recent Issues - Click to Update</h3>
+                    <table class="issues-table">
+                        <thead>
+                            <tr>
+                                <th>Issue ID</th>
+                                <th>Date</th>
+                                <th>C-Token</th>
+                                <th>Topic</th>
+                                <th>Issue</th>
+                                <th>Current Status</th>
+                                <th>Select</th>
+                            </tr>
+                        </thead>
+                        <tbody id="update-recent-issues">
+                            <!-- Recent issues will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Manual Issue ID Input -->
+                <div class="form-group">
+                    <label>Or Enter Issue ID Manually:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="update-issue-id" placeholder="e.g., BTC-001" style="flex: 1;">
+                        <button onclick="loadIssueDetails()" style="width: auto;">Load Issue</button>
+                    </div>
+                </div>
+
+                <!-- Full Issue Details Form -->
+                <div id="issue-details-section" style="display: none;">
+                    <div class="form-group">
+                        <label>C-Token:</label>
+                        <input type="text" id="update-c-token">
+                    </div>
+                    <div class="form-group">
+                        <label>Case #:</label>
+                        <input type="text" id="update-case-number">
+                    </div>
+                    <div class="form-group">
+                        <label>Advocate Name:</label>
+                        <input type="text" id="update-advocate">
+                    </div>
+                    <div class="form-group">
+                        <label>Topic:</label>
+                        <select id="update-topic">
+                            <option value="">Select Topic</option>
+                            <option value="Eligibility">Eligibility</option>
+                            <option value="Withdrawal">Withdrawal</option>
+                            <option value="Transfer">Transfer</option>
+                            <option value="Purchase">Purchase</option>
+                            <option value="Sale">Sale</option>
+                            <option value="Technical">Technical</option>
+                            <option value="Compliance">Compliance</option>
+                            <option value="Security">Security</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Issue:</label>
+                        <input type="text" id="update-subcategory">
+                    </div>
+                    <div class="form-group">
+                        <label>Description of Issue:</label>
+                        <textarea id="update-description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select id="update-status">
+                            <option value="Active">Active</option>
+                            <option value="Resolved">Resolved</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Monitoring">Monitoring</option>
+                            <option value="Closed">Closed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Resolution:</label>
+                        <textarea id="update-resolution" placeholder="Enter resolution details"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Additional Notes:</label>
+                        <textarea id="update-notes" placeholder="Enter any additional notes"></textarea>
+                    </div>
+
+                    <!-- Existing Samples -->
+                    <div class="form-group">
+                        <label>Samples:</label>
+                        <div id="existing-samples">
+                            <!-- Samples will be listed here -->
+                        </div>
+                        <button onclick="addNewSample()" class="add-sample-button">Add New Sample</button>
+                    </div>
+
+                    <!-- New Sample Form -->
+                    <div id="new-sample-form" style="display: none;">
+                        <h3>Add New Sample</h3>
+                        <div class="form-group">
+                            <label>C-Token:</label>
+                            <input type="text" id="new-sample-c-token" placeholder="Enter C-Token">
+                        </div>
+                        <div class="form-group">
+                            <label>Case #:</label>
+                            <input type="text" id="new-sample-case-number" placeholder="Enter Case Number">
+                        </div>
+                        <div class="form-group">
+                            <label>Advocate Name:</label>
+                            <input type="text" id="new-sample-advocate" placeholder="Enter Advocate Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Topic:</label>
+                            <select id="new-sample-topic">
+                                <option value="">Select Topic</option>
+                                <option value="Eligibility">Eligibility</option>
+                                <option value="Withdrawal">Withdrawal</option>
+                                <option value="Transfer">Transfer</option>
+                                <option value="Purchase">Purchase</option>
+                                <option value="Sale">Sale</option>
+                                <option value="Technical">Technical</option>
+                                <option value="Compliance">Compliance</option>
+                                <option value="Security">Security</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Issue:</label>
+                            <input type="text" id="new-sample-subcategory" placeholder="Type the specific issue">
+                        </div>
+                        <div class="form-group">
+                            <label>Description of Issue:</label>
+                            <textarea id="new-sample-description" placeholder="Enter description of the issue"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Additional Notes:</label>
+                            <textarea id="new-sample-notes" placeholder="Enter any additional notes"></textarea>
+                        </div>
+                        <button onclick="submitNewSample()">Submit Sample</button>
+                    </div>
+
+                    <button onclick="updateIssue()" style="margin-top: 20px;">Update Issue</button>
+                </div>
+            </div>
+
+            <!-- Show Issue Details -->
+            <div id="show-section" class="form-section">
+                <h2>Show Issue Details</h2>
+                <div class="form-group">
+                    <label>Issue ID:</label>
+                    <input type="text" id="show-issue-id" placeholder="e.g., BTC-001">
+                </div>
+                <button onclick="showIssueDetails()">Show Details</button>
+                <div id="issue-details"></div>
+            </div>
+
+            <!-- Recent Issues Table -->
+            <div class="recent-issues">
+                <h3>Recent Issues</h3>
+                <table class="issues-table">
+                    <thead>
+                        <tr>
+                            <th>Issue ID</th>
+                            <th>Date</th>
+                            <th>C-Token</th>
+                            <th>Topic</th>
+                            <th>Issue</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-issues-list">
+                        <!-- Issues will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+
+    <div id="notification" class="notification"></div>
+
     <script src="script.js"></script>
 </body>
 </html>
